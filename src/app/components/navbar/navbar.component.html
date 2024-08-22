@@ -22,6 +22,9 @@
                         <li><a routerLink="/" class="block py-2 hover:text-black"
                                 [ngClass]="{'text-gray-500': selectedOption !== 'home', 'text-black': selectedOption === 'home'}"
                                 (click)="navigateTo('/')">HOME</a></li>
+                        <li><a routerLink="/" class="block py-2 hover:text-black"
+                                [ngClass]="{'text-gray-500': selectedOption !== 'home', 'text-black': selectedOption === 'home'}"
+                                (click)="navigateTo('/admin-info')">PROFILE</a></li>
                     </ul>
                 </div>
 
@@ -41,7 +44,7 @@
                                 <img [src]="product.imageUrl" [alt]="product.name" class="w-12 h-12 object-cover mr-2">
                                 <div class="flex-grow">
                                     <div class="font-semibold">{{ product.name }}</div>
-                                    <div class="text-sm text-gray-600">{{ product.price  }}</div>
+                                    <div class="text-sm text-gray-600">{{ product.price }}</div>
                                 </div>
                             </div>
                         </div>

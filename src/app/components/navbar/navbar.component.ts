@@ -37,7 +37,7 @@ export class NavbarComponent implements OnInit {
   constructor(   private keycloakService:KeycloakService, private brandService: BrandService,     private productService: ProductService, private router: Router) {}
 
   ngOnInit() {
-    console.log("token::"+this.keycloakService.profile?.token);
+
     
    
     this.searchSubject.pipe(
