@@ -3,6 +3,7 @@ import { BrandService } from '../../services/brand.service';
 import { ProductService } from '../../services/product.service';
 import { Brand, BrandRequest, BrandResponse } from '../../interfaces/brand';
 import { Product, ProductRequest, ProductResponse } from '../../interfaces/product';
+import { Client } from '../../interfaces/client';
 
 
 @Component({
@@ -11,7 +12,12 @@ import { Product, ProductRequest, ProductResponse } from '../../interfaces/produ
   styleUrls: ['./admin-page.component.scss']
 })
 export class AdminPageComponent implements OnInit {
-  activeTab: 'brands' | 'products' = 'brands';
+  activeTab: 'brands' | 'products' | 'clients' = 'brands';
+  clients: Client[] = [
+    { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'User' },
+    { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'Admin' },
+    // Add more mock data as needed
+  ];
   brands: BrandResponse[] = [];
   products: ProductResponse[] = [];
   showBrandModal = false;

@@ -14,6 +14,11 @@
                 class="px-4 py-2 text-sm font-medium rounded-r-lg border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
           Products
         </button>
+        <button (click)="activeTab = 'clients'" 
+                [ngClass]="{'bg-blue-500 text-white': activeTab === 'clients', 'bg-gray-200 text-gray-700': activeTab !== 'clients'}" 
+                class="px-4 py-2 text-sm font-medium border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
+            Clients
+        </button>
       </div>
     </div>
   
@@ -35,8 +40,10 @@
             <td class="border p-2">{{ brand.name }}</td>
             <td class="border p-2">{{ brand.description }}</td>
             <td class="border p-2">
-              <button (click)="openUpdateBrandModal(brand)" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Update</button>
-              <button (click)="deleteBrand(brand.id)" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+              <div class="flex flex-nowrap space-x-2">
+                <button (click)="openUpdateBrandModal(brand)" class="bg-blue-500 text-white px-2 py-1 rounded min-w-[60px]">Update</button>
+                <button (click)="deleteBrand(brand.id)" class="bg-red-500 text-white px-2 py-1 rounded min-w-[60px]">Delete</button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -65,14 +72,17 @@
             <td class="border p-2">{{ product.price | currency }}</td>
             <td class="border p-2">{{ product.brandName }}</td>
             <td class="border p-2">
-              <button (click)="openUpdateProductModal(product)" class="bg-blue-500 text-white px-2 py-1 rounded mr-2">Update</button>
-              <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+              <div class="flex flex-nowrap space-x-2">
+              <button (click)="openUpdateProductModal(product)" class="bg-blue-500 text-white px-2 py-1 rounded mr-2  min-w-[60px">Update</button>
+              <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-2 py-1 rounded  min-w-[60px">Delete</button>
+               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+  
   
   <!-- Add/Update Brand Modal -->
   <div *ngIf="showBrandModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
@@ -89,7 +99,27 @@
       </form>
     </div>
   </div>
-  
+  <div *ngIf="activeTab === 'clients'">
+    <h2 class="text-xl font-semibold mb-2">Clients</h2>
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-black text-white">
+          <th class="border p-2">First Name</th>
+          <th class="border p-2">Last Name</th>
+          <th class="border p-2">Email</th>
+          <th class="border p-2">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let client of clients">
+          <td class="border p-2">{{ client.firstName }}</td>
+          <td class="border p-2">{{ client.lastName }}</td>
+          <td class="border p-2">{{ client.email }}</td>
+          <td class="border p-2">{{ client.role }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <!-- Add/Update Product Modal -->
   <div *ngIf="showProductModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
