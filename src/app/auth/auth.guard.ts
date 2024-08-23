@@ -1,28 +1,23 @@
-import {ActivatedRoute, CanActivateFn, Router} from '@angular/router';
-import {inject} from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { inject } from '@angular/core';
 import { KeycloakService } from '../services/keycloak/keycloak.service';
-export const authGuard: CanActivateFn = (route, state) => {
+
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const tokenService = inject(KeycloakService);
   const router = inject(Router);
-
-  if (tokenService.keycloak.isTokenExpired() || !tokenService.keycloak.authenticated) {
-    // Redirect to login page instead of logout to avoid loop
-    tokenService.login(); 
+  if (!tokenService.keycloak.authenticated || tokenService.keycloak.isTokenExpired()) {
+    tokenService.login();
     return false;
   }
-
   const roles = tokenService.keycloak?.tokenParsed?.["resource_access"]?.["hps-back-end"]?.roles;
   const expectedRoles = route.data['roles'] as string[];
 
   if (!roles || !expectedRoles.some(role => roles.includes(role))) {
-    // Navigate to a forbidden page if roles do not match
-    tokenService.logout();
     router.navigate(['/forbidden']);
+    setTimeout(() => {
+      tokenService.logout();
+    }, 3000);
     return false;
   }
-
   return true;
 };
-
-
-

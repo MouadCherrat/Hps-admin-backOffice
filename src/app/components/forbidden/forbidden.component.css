@@ -1,50 +1,50 @@
 .forbidden-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f8f8f8;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .forbidden-content {
-    text-align: center;
-    background: white;
-    padding: 50px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .forbidden-content h1 {
-    font-size: 6em;
-    color: #ff6b6b;
-    margin: 0;
-  }
-  
-  .forbidden-content h2 {
-    font-size: 2.5em;
-    color: #333;
-    margin: 10px 0;
-  }
-  
-  .forbidden-content p {
-    font-size: 1.2em;
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .back-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    color: white;
-    background-color: #ff6b6b;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .back-button:hover {
-    background-color: #ff4b4b;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #2e2e2e; /* Match the dark background */
+  font-family: 'Open Sans', Arial, sans-serif; /* Match Keycloak's font */
+}
+
+.forbidden-content {
+  text-align: center;
+  background: #3a3a3a; /* Darker background for the content box */
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.forbidden-content h1 {
+  font-size: 6em;
+  color: #f50000; /* Keep the red color for contrast */
+  margin: 0;
+}
+
+.forbidden-content h2 {
+  font-size: 2.5em;
+  color: #ffffff; /* White text for good contrast against the dark background */
+  margin: 20px 0 10px 0; /* Adds space between the h1 and h2 */
+}
+
+.forbidden-content p {
+  font-size: 1.2em;
+  color: #c7c7c7; /* Light grey for less important text */
+  margin-bottom: 20px;
+  margin-top: 10px; /* Add some space above the paragraph */
+}
+
+.back-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #ffffff; /* White text */
+  background-color: #005ea8; /* Blue button matching Keycloak's theme */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #004b7a; /* Darker blue on hover */
+}

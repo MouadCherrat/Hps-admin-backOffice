@@ -7,34 +7,22 @@ import { HomeComponent } from './components/home/home.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 
 const routes: Routes = [
-
-  // {
-  //   path: '',
-  //   loadChildren: () => import('./routes/APP_ROUTES').then((m) => m.APP_ROUTES), canActivate: [authGuard]
-  // },
   {
-    path: '', component: HomeComponent, canActivate: [authGuard], data: { roles: ['admin'] }, children: [
-      {
-        path: '', component: AdminPageComponent,
-      },
-      {
-        path: 'admin-info', component: AdminInfoComponent,
-      },
-      { path: 'forbidden', component: ForbiddenComponent }
-
-
-
+    path: '', 
+    component: HomeComponent, 
+    canActivate: [authGuard], 
+    data: { roles: ['admin'] }, 
+    children: [
+      { path: '', component: AdminPageComponent },
+      { path: 'admin-info', component: AdminInfoComponent }
     ]
-
   },
-  { path: 'forbidden', component: ForbiddenComponent }
-
+  { path: 'forbidden', component: ForbiddenComponent },  // Ensure this route is outside of any guarded paths
+  { path: '**', redirectTo: '' }  // Redirect any unknown paths to the home page
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {
-
-}
+export class AppRoutingModule {}
