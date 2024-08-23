@@ -4,27 +4,25 @@ import { KeycloakService } from '../services/keycloak/keycloak.service';
 export const authGuard: CanActivateFn = (route, state) => {
   const tokenService = inject(KeycloakService);
   const router = inject(Router);
-  const activatedRoute = inject(ActivatedRoute);
-  if (tokenService.keycloak.isTokenExpired()) {
-    tokenService.logout();
-    return false;
-  }
-  if (!tokenService.keycloak.authenticated) {
-    tokenService.logout();
-    return false;
-  }
-  const roles = tokenService.keycloak?.tokenParsed?.["resource_access"]?.["hps-back-end"]?.roles;
-  const expectedRoles= route.data['roles'];
-  if (!roles?.includes(expectedRoles[0])){
-    tokenService.logout();
-    router.navigate(['/forbidden'],{relativeTo:activatedRoute}); 
-    
-       
-     return false;
-    
-  }
-  return true;
 
+  if (tokenService.keycloak.isTokenExpired() || !tokenService.keycloak.authenticated) {
+    // Redirect to login page instead of logout to avoid loop
+    tokenService.login(); 
+    return false;
+  }
+
+  const roles = tokenService.keycloak?.tokenParsed?.["resource_access"]?.["hps-back-end"]?.roles;
+  const expectedRoles = route.data['roles'] as string[];
+
+  if (!roles || !expectedRoles.some(role => roles.includes(role))) {
+    // Navigate to a forbidden page if roles do not match
+    tokenService.logout();
+    router.navigate(['/forbidden']);
+    return false;
+  }
+
+  return true;
 };
+
 
 

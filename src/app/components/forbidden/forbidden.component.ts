@@ -6,5 +6,4 @@ import { Component } from '@angular/core';
   styleUrl: './forbidden.component.css'
 })
 export class ForbiddenComponent {
-  constructor(private location: Location) {}
 }

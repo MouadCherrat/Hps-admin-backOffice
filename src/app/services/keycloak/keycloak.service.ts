@@ -38,6 +38,7 @@ export class KeycloakService {
 
   login() {
     return this.keycloak.login();
+    
   }
 
   logout() {
