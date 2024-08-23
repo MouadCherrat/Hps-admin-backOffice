@@ -53,7 +53,6 @@ export function kcFactory(kcService: KeycloakService) {
     MatButtonModule,
     CommonModule,
     RouterModule,
-    
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule
