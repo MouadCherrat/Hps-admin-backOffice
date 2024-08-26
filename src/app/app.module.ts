@@ -23,6 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AdminInfoComponent } from './components/admin-info/admin-info.component';
 import { ForbiddenComponent } from './components/forbidden/forbidden.component';
+import { NullFormatterPipe } from './pipes/null-formatter.pipe';
 
 export function kcFactory(kcService: KeycloakService) {
   return () => kcService.init();
@@ -35,6 +36,7 @@ export function kcFactory(kcService: KeycloakService) {
     NavbarComponent,
     AdminPageComponent,
     AdminInfoComponent,
+    NullFormatterPipe,
     ForbiddenComponent
     
   ],

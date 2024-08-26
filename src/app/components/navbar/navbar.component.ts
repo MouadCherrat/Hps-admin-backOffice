@@ -30,6 +30,8 @@ export class NavbarComponent implements OnInit {
   searchQuery: string = '';
   searchResults: ProductResponse[] = [];
   private searchSubject = new Subject<string>();
+  isSearchDropdownVisible: boolean = false;
+
 
 
   // New state to track which option is selected
@@ -110,6 +112,8 @@ export class NavbarComponent implements OnInit {
   }
   onSearchInput() {
     this.searchSubject.next(this.searchQuery);
+    this.isSearchDropdownVisible = this.searchQuery.length > 0;
+
   }
 
   onSearch() {
@@ -121,6 +125,16 @@ export class NavbarComponent implements OnInit {
   logout(){
     this.keycloakService.logout();
   }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const searchElement = document.querySelector('.search-container');
+    if (searchElement && !searchElement.contains(event.target as Node)) {
+      this.isSearchDropdownVisible = false;
+      this.searchQuery = '';
+      this.searchResults = [];
+    }
+  }
+
 
   
 

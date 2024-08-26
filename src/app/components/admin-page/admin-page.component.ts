@@ -1,25 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import { BrandService } from '../../services/brand.service';
 import { ProductService } from '../../services/product.service';
+import { UserService } from '../../services/user.service';
+import { KeycloakService } from '../../services/keycloak/keycloak.service';
+import { OrderService } from '../../services/order.service';
+import { PaymentService } from '../../services/payment.service';
 import { Brand, BrandRequest, BrandResponse } from '../../interfaces/brand';
 import { Product, ProductRequest, ProductResponse } from '../../interfaces/product';
 import { Client } from '../../interfaces/client';
-
-
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { Order, OrderLineItemResponse } from '../../interfaces/order';
+import { Bill } from '../../interfaces/bill';
 @Component({
   selector: 'app-admin-page',
   templateUrl: './admin-page.component.html',
-  styleUrls: ['./admin-page.component.scss']
+  styleUrls: ['./admin-page.component.scss'],
+  animations: [
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0 }),
+        animate('300ms ease-out', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ height: 0, opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class AdminPageComponent implements OnInit {
-  activeTab: 'brands' | 'products' | 'clients' = 'brands';
-  clients: Client[] = [
-    { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'User' },
-    { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'Admin' },
-    // Add more mock data as needed
-  ];
+  activeTab: 'brands-products' | 'clients' | 'orders' | 'payments' = 'brands-products';
+  clients: Client[] = [];
   brands: BrandResponse[] = [];
   products: ProductResponse[] = [];
+  orders: Order[] = [];
+  bills: Bill[] = [];
   showBrandModal = false;
   showProductModal = false;
   currentBrand: BrandRequest = {} as BrandRequest;
@@ -28,17 +42,61 @@ export class AdminPageComponent implements OnInit {
   editingProduct = false;
   editingBrandId: number | null = null;
   editingProductId: number | null = null;
+  visibleProductsBrandId: number | null = null;
+  visibleOrderItemsId: number | null = null;
+  orderLineItems: { [orderId: number]: OrderLineItemResponse[] } = {};
 
   constructor(
     private brandService: BrandService,
-    private productService: ProductService
+    private productService: ProductService,
+    private userService: UserService,
+    private orderService: OrderService,
+    private paymentService: PaymentService,
+    private keycloakService: KeycloakService
   ) {}
 
   ngOnInit(): void {
     this.loadBrands();
     this.loadProducts();
-    
+    this.loadClients();
+    this.loadOrders();
+    this.loadBills();
   }
+  loadOrders(): void {
+    this.orderService.getAllOrders().subscribe(
+      (orders: Order[]) => this.orders = orders,
+      (error: any) => console.error('Error loading orders:', error)
+    );
+  }
+
+  loadBills(): void {
+    this.paymentService.getAllBills().subscribe(
+      (bills: Bill[]) => this.bills = bills,
+      (error: any) => console.error('Error loading bills:', error)
+    );
+  }
+  toggleOrderItemsVisibility(orderId: number): void {
+    if (this.visibleOrderItemsId === orderId) {
+      this.visibleOrderItemsId = null;
+    } else {
+      this.visibleOrderItemsId = orderId;
+      this.loadOrderLineItems(orderId);
+    }
+  }
+
+  loadOrderLineItems(orderId: number): void {
+    if (!this.orderLineItems[orderId]) {
+      this.orderService.getOrderLineItems(orderId).subscribe(
+        (items: OrderLineItemResponse[]) => this.orderLineItems[orderId] = items,
+        (error: any) => console.error('Error loading order line items:', error)
+      );
+    }
+  }
+
+  isOrderItemsVisible(orderId: number): boolean {
+    return this.visibleOrderItemsId === orderId;
+  }
+
 
   loadBrands(): void {
     this.brandService.getAllBrands().subscribe(
@@ -51,6 +109,23 @@ export class AdminPageComponent implements OnInit {
     this.productService.getAllProducts().subscribe(
       (products: ProductResponse[]) => this.products = products,
       (error: any) => console.error('Error loading products:', error)
+    );
+  }
+
+  loadClients(): void {
+    this.userService.getAllUsers().subscribe(
+      (users: Client[]) => {
+        this.clients = users.map(user => ({
+          ...user,
+          userName: user.userName || this.keycloakService.profile?.username || '',
+          lastName: user.lastName || '',
+          email: user.email || '',
+          role: user.role || this.keycloakService.profile?.role || '',
+          sexe: user.sexe || '',
+          phone: user.phone || ''
+        }));
+      },
+      (error: any) => console.error('Error loading clients:', error)
     );
   }
 
@@ -95,8 +170,6 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
-
-
   deleteBrand(id: number): void {
     if (confirm('Are you sure you want to delete this brand?')) {
       this.brandService.deleteBrand(id).subscribe(
@@ -111,6 +184,7 @@ export class AdminPageComponent implements OnInit {
     this.editingProduct = false;
     this.showProductModal = true;
   }
+
   openUpdateProductModal(product: ProductResponse): void {
     this.currentProduct = { 
       name: product.name,
@@ -157,5 +231,17 @@ export class AdminPageComponent implements OnInit {
         (error: any) => console.error('Error deleting product:', error)
       );
     }
+  }
+
+  toggleProductsVisibility(brandId: number): void {
+    this.visibleProductsBrandId = this.visibleProductsBrandId === brandId ? null : brandId;
+  }
+
+  isProductsVisible(brandId: number): boolean {
+    return this.visibleProductsBrandId === brandId;
+  }
+
+  getProductsForBrand(brandId: number): ProductResponse[] {
+    return this.products.filter(product => product.brandId === brandId);
   }
 }

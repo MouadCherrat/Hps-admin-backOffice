@@ -29,7 +29,8 @@
                 </div>
 
                 <div class="hidden lg:flex items-center space-x-4">
-                    <form class="flex relative" (ngSubmit)="onSearch()">
+                    <div class="search-container relative">
+                        <form class="flex relative" (ngSubmit)="onSearch()">
                         <input type="search" [(ngModel)]="searchQuery" name="search" placeholder="Search"
                             (input)="onSearchInput()"
                             class="px-3 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -37,7 +38,7 @@
                             class="px-4 py-1 bg-green-500 text-white rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">Search</button>
 
                         <!-- Dropdown for search results -->
-                        <div *ngIf="searchResults.length > 0"
+                        <div *ngIf="isSearchDropdownVisible && searchResults.length > 0"
                             class="absolute top-full left-0 w-full bg-white shadow-lg rounded-b-md mt-1 z-50 max-h-60 overflow-y-auto">
                             <div *ngFor="let product of searchResults"
                                 class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
@@ -49,6 +50,7 @@
                             </div>
                         </div>
                     </form>
+                    </div>
                     <a href="#" class="text-gray-600 hover:text-gray-900" (click)="logout()"> Log out</a>
                 </div>
             </div>

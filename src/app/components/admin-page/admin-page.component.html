@@ -4,106 +4,270 @@
   <!-- Centered tab selection -->
   <div class="flex justify-center mb-8">
     <div class="inline-flex rounded-md shadow-sm" role="group">
-      <button (click)="activeTab = 'brands'"
-              [ngClass]="{'bg-blue-500 text-white': activeTab === 'brands', 'bg-gray-200 text-gray-700': activeTab !== 'brands'}"
+      <button (click)="activeTab = 'brands-products'"
+              [ngClass]="{'bg-blue-500 text-white': activeTab === 'brands-products', 'bg-gray-200 text-gray-700': activeTab !== 'brands-products'}"
               class="px-6 py-2 text-sm font-medium rounded-l-lg border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
-        Brands
-      </button>
-      <button (click)="activeTab = 'products'"
-              [ngClass]="{'bg-blue-500 text-white': activeTab === 'products', 'bg-gray-200 text-gray-700': activeTab !== 'products'}"
-              class="px-6 py-2 text-sm font-medium border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
-        Products
+        Brands/Products
       </button>
       <button (click)="activeTab = 'clients'"
               [ngClass]="{'bg-blue-500 text-white': activeTab === 'clients', 'bg-gray-200 text-gray-700': activeTab !== 'clients'}"
               class="px-6 py-2 text-sm font-medium rounded-r-lg border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
         Clients
       </button>
+              <button (click)="activeTab = 'orders'"
+              [ngClass]="{'bg-blue-500 text-white': activeTab === 'orders', 'bg-gray-200 text-gray-700': activeTab !== 'orders'}"
+              class="px-6 py-2 text-sm font-medium border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
+        Orders
+        </button>
+        <button (click)="activeTab = 'payments'"
+              [ngClass]="{'bg-blue-500 text-white': activeTab === 'payments', 'bg-gray-200 text-gray-700': activeTab !== 'payments'}"
+              class="px-6 py-2 text-sm font-medium rounded-r-lg border border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500 focus:text-white">
+        Payments
+        </button>
     </div>
-  </div>
+    </div>
 
-  <!-- Brands Tab -->
-  <div *ngIf="activeTab === 'brands'">
-    <h2 class="text-xl font-semibold mb-2">Brands</h2>
-    <button (click)="openAddBrandModal()" class="bg-green-500 text-white px-4 py-2 rounded mb-4">Add Brand</button>
+  <!-- Brands/Products Tab -->
+  <div *ngIf="activeTab === 'brands-products'">
+    <h2 class="text-xl font-semibold mb-2">Brands/Products</h2>
+    <div class="flex space-x-2 mb-4">
+      <button (click)="openAddBrandModal()" class="bg-green-500 text-white px-4 py-2 rounded">Add Brand</button>
+      <button (click)="openAddProductModal()" class="bg-green-500 text-white px-4 py-2 rounded">Add Product</button>
+    </div>
     <table class="w-full border-collapse table-fixed">
       <thead>
         <tr class="bg-black text-white">
-          <th class="border p-2 w-1/4">Image</th>
-          <th class="border p-2 w-1/4">Name</th>
-          <th class="border p-2 w-2/4">Description</th>
-          <th class="border p-2 w-1/4">Actions</th>
+          <th class="border p-2 w-1/6">Image</th>
+          <th class="border p-2 w-1/6">Name</th>
+          <th class="border p-2 w-2/6">Description</th>
+          <th class="border p-2 w-1/6">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let brand of brands">
-          <td class="border p-2"><img [src]="brand.imageUrl" alt="{{ brand.name }}" class="w-16 h-16 object-cover"></td>
-          <td class="border p-2">{{ brand.name }}</td>
-          <td class="border p-2">{{ brand.description }}</td>
+        <ng-container *ngFor="let brand of brands">
+          <tr>
+            <td class="border p-2"><img [src]="brand.imageUrl" alt="{{ brand.name }}" class="w-16 h-16 object-cover"></td>
+            <td class="border p-2">{{ brand.name }}</td>
+            <td class="border p-2">{{ brand.description }}</td>
+            <td class="border p-2">
+              <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
+                <button (click)="openUpdateBrandModal(brand)" class="bg-blue-500 text-white px-2 py-1 rounded min-w-[60px]">Update</button>
+                <button (click)="deleteBrand(brand.id)" class="bg-red-500 text-white px-2 py-1 rounded min-w-[60px]">Delete</button>
+                <button (click)="toggleProductsVisibility(brand.id)" class="bg-gray-500 text-white px-2 py-1 rounded min-w-[60px]">
+                  {{ isProductsVisible(brand.id) ? 'Hide' : 'Show' }} Products
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="isProductsVisible(brand.id)" [@slideInOut]>
+            <td colspan="4">
+              <table class="w-full border-collapse table-fixed">
+                <thead>
+                  <tr class="bg-gray-200">
+                    <th class="border p-2 w-1/7">Image</th>
+                    <th class="border p-2 w-1/7">Name</th>
+                    <th class="border p-2 w-1/7">Description</th>
+                    <th class="border p-2 w-1/7">Price</th>
+                    <th class="border p-2 w-1/7">Quantity</th>
+                    <th class="border p-2 w-1/7">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let product of getProductsForBrand(brand.id)">
+                    <td class="border p-2"><img [src]="product.imageUrl" alt="{{ product.name }}" class="w-12 h-12 object-cover"></td>
+                    <td class="border p-2">{{ product.name }}</td>
+                    <td class="border p-2">{{ product.description }}</td>
+                    <td class="border p-2">{{ product.price | currency }}</td>
+                    <td class="border p-2">{{ product.availableQuantity }}</td>
+                    <td class="border p-2">
+                      <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
+                        <button (click)="openUpdateProductModal(product)" class="bg-blue-500 text-white px-2 py-1 rounded min-w-[60px]">Update</button>
+                        <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-2 py-1 rounded min-w-[60px]">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+<!-- Clients Tab -->
+<div *ngIf="activeTab === 'clients'">
+  <h2 class="text-xl font-semibold mb-2">Clients</h2>
+  <table class="w-full border-collapse table-fixed">
+    <thead>
+      <tr class="bg-black text-white">
+        <th class="border p-2 w-1/6">UserName</th>
+        <th class="border p-2 w-1/6">Last Name</th>
+        <th class="border p-2 w-1/6">Email</th>
+        <!-- <th class="border p-2 w-1/6">Role</th>
+        <th class="border p-2 w-1/6">Sexe</th> -->
+        <th class="border p-2 w-1/6">Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of clients">
+        <td class="border p-2" [innerHTML]="client.userName | nullFormatter"></td>
+        <td class="border p-2" [innerHTML]="client.lastName | nullFormatter"></td>
+        <td class="border p-2" [innerHTML]="client.email | nullFormatter"></td>
+        <!-- <td class="border p-2" [innerHTML]="client.role | nullFormatter"></td>
+        <td class="border p-2" [innerHTML]="client.sexe | nullFormatter"></td> -->
+        <td class="border p-2" [innerHTML]="client.phone | nullFormatter"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+ <!-- Orders Tab -->
+ <div *ngIf="activeTab === 'orders'">
+  <h2 class="text-xl font-semibold mb-2">Orders</h2>
+  <table class="w-full border-collapse table-fixed">
+    <thead>
+      <tr class="bg-black text-white">
+        <th class="border p-2">ID</th>
+        <th class="border p-2">Reference</th>
+        <th class="border p-2">Total Amount</th>
+        <th class="border p-2">User ID</th>
+        <th class="border p-2">Created At</th>
+        <th class="border p-2">Last Modified Date</th>
+        <th class="border p-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let order of orders">
+        <tr>
+          <td class="border p-2">{{ order.id }}</td>
+          <td class="border p-2">{{ order.reference }}</td>
+          <td class="border p-2">{{ order.totalAmount | currency }}</td>
+          <td class="border p-2">{{ order.userId }}</td>
+          <td class="border p-2">{{ order.createdAt | date:'short' }}</td>
+          <td class="border p-2">{{ order.lastModifiedDate | date:'short' }}</td>
           <td class="border p-2">
-            <div class="flex flex-nowrap space-x-2">
-              <button (click)="openUpdateBrandModal(brand)" class="bg-blue-500 text-white px-2 py-1 rounded min-w-[60px]">Update</button>
-              <button (click)="deleteBrand(brand.id)" class="bg-red-500 text-white px-2 py-1 rounded min-w-[60px]">Delete</button>
-            </div>
+            <button (click)="toggleOrderItemsVisibility(order.id)" class="bg-blue-500 text-white px-2 py-1 rounded">
+              {{ isOrderItemsVisible(order.id) ? 'Hide' : 'Show' }} Products
+            </button>
           </td>
         </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Products Tab -->
-  <div *ngIf="activeTab === 'products'">
-    <h2 class="text-xl font-semibold mb-2">Products</h2>
-    <button (click)="openAddProductModal()" class="bg-green-500 text-white px-4 py-2 rounded mb-4">Add Product</button>
-    <table class="w-full border-collapse table-fixed">
-      <thead>
-        <tr class="bg-black text-white">
-          <th class="border p-2 w-1/4">Image</th>
-          <th class="border p-2 w-1/4">Name</th>
-          <th class="border p-2 w-2/4">Description</th>
-          <th class="border p-2 w-1/4">Price</th>
-          <th class="border p-2 w-1/4">Brand</th>
-          <th class="border p-2 w-1/4">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of products">
-          <td class="border p-2"><img [src]="product.imageUrl" alt="{{ product.name }}" class="w-16 h-16 object-cover"></td>
-          <td class="border p-2">{{ product.name }}</td>
-          <td class="border p-2">{{ product.description }}</td>
-          <td class="border p-2">{{ product.price | currency }}</td>
-          <td class="border p-2">{{ product.brandName }}</td>
-          <td class="border p-2">
-            <div class="flex flex-nowrap space-x-2">
-              <button (click)="openUpdateProductModal(product)" class="bg-blue-500 text-white px-2 py-1 rounded min-w-[60px]">Update</button>
-              <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-2 py-1 rounded min-w-[60px]">Delete</button>
-            </div>
+        <tr *ngIf="isOrderItemsVisible(order.id)" [@slideInOut]>
+          <td colspan="7">
+            <table class="w-full border-collapse table-fixed">
+              <thead>
+                <tr class="bg-gray-200">
+                  <th class="border p-2">Product Name</th>
+                  <th class="border p-2">Quantity</th>
+                  <th class="border p-2">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of orderLineItems[order.id]">
+                  <td class="border p-2">{{ item.product.name }}</td>
+                  <td class="border p-2">{{ item.quantity }}</td>
+                  <td class="border p-2">{{ item.product.price * item.quantity | currency }}</td>
+                </tr>
+              </tbody>
+            </table>
           </td>
         </tr>
-      </tbody>
-    </table>
-  </div>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
 
-  <!-- Clients Tab -->
-  <div *ngIf="activeTab === 'clients'">
-    <h2 class="text-xl font-semibold mb-2">Clients</h2>
-    <table class="w-full border-collapse table-fixed">
-      <thead>
-        <tr class="bg-black text-white">
-          <th class="border p-2 w-1/4">First Name</th>
-          <th class="border p-2 w-1/4">Last Name</th>
-          <th class="border p-2 w-2/4">Email</th>
-          <th class="border p-2 w-1/4">Role</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let client of clients">
-          <td class="border p-2">{{ client.firstName }}</td>
-          <td class="border p-2">{{ client.lastName }}</td>
-          <td class="border p-2">{{ client.email }}</td>
-          <td class="border p-2">{{ client.role }}</td>
-        </tr>
-      </tbody>
-    </table>
+<!-- Payments Tab -->
+<div *ngIf="activeTab === 'payments'">
+  <h2 class="text-xl font-semibold mb-2">Payments</h2>
+  <table class="w-full border-collapse table-fixed">
+    <thead>
+      <tr class="bg-black text-white">
+        <th class="border p-2">ID</th>
+        <th class="border p-2">Total Amount</th>
+        <th class="border p-2">Paid</th>
+        <th class="border p-2">Bill Reference</th>
+        <th class="border p-2">Payment Method</th>
+        <th class="border p-2">Created At</th>
+        <th class="border p-2">Client ID</th>
+        <th class="border p-2">Order ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let bill of bills">
+        <td class="border p-2">{{ bill.id }}</td>
+        <td class="border p-2">{{ bill.totalAmount | currency }}</td>
+        <td class="border p-2">{{ bill.paid ? 'Yes' : 'No' }}</td>
+        <td class="border p-2">{{ bill.billReference }}</td>
+        <td class="border p-2">{{ bill.paymentMethod }}</td>
+        <td class="border p-2">{{ bill.createdAt | date:'short' }}</td>
+        <td class="border p-2">{{ bill.clientId }}</td>
+        <td class="border p-2">{{ bill.orderId }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- Brand Modal -->
+<div *ngIf="showBrandModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <h3 class="text-lg font-bold mb-4">{{ editingBrand ? 'Update' : 'Add' }} Brand</h3>
+    <form (ngSubmit)="saveBrand()">
+      <div class="mb-4">
+        <label for="brandName" class="block text-sm font-medium text-gray-700">Name</label>
+        <input type="text" id="brandName" name="brandName" [(ngModel)]="currentBrand.name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="mb-4">
+        <label for="brandDescription" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="brandDescription" name="brandDescription" [(ngModel)]="currentBrand.description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+      </div>
+      <div class="mb-4">
+        <label for="brandImageUrl" class="block text-sm font-medium text-gray-700">Image URL</label>
+        <input type="text" id="brandImageUrl" name="brandImageUrl" [(ngModel)]="currentBrand.imageUrl" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" (click)="closeBrandModal()" class="px-4 py-2 bg-gray-300 text-black rounded">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div *ngIf="showProductModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <h3 class="text-lg font-bold mb-4">{{ editingProduct ? 'Update' : 'Add' }} Product</h3>
+    <form (ngSubmit)="saveProduct()">
+      <div class="mb-4">
+        <label for="productName" class="block text-sm font-medium text-gray-700">Name</label>
+        <input type="text" id="productName" name="productName" [(ngModel)]="currentProduct.name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="mb-4">
+        <label for="productDescription" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="productDescription" name="productDescription" [(ngModel)]="currentProduct.description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+      </div>
+      <div class="mb-4">
+        <label for="productPrice" class="block text-sm font-medium text-gray-700">Price</label>
+        <input type="number" id="productPrice" name="productPrice" [(ngModel)]="currentProduct.price" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="mb-4">
+        <label for="productQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+        <input type="number" id="productQuantity" name="productQuantity" [(ngModel)]="currentProduct.availableQuantity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="mb-4">
+        <label for="productImageUrl" class="block text-sm font-medium text-gray-700">Image URL</label>
+        <input type="text" id="productImageUrl" name="productImageUrl" [(ngModel)]="currentProduct.imageUrl" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+      <div class="mb-4">
+        <label for="productBrand" class="block text-sm font-medium text-gray-700">Brand</label>
+        <select id="productBrand" name="productBrand" [(ngModel)]="currentProduct.brandId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+          <option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</option>
+        </select>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" (click)="closeProductModal()" class="px-4 py-2 bg-gray-300 text-black rounded">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+      </div>
+    </form>
   </div>
 </div>
