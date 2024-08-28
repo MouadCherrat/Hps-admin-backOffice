@@ -7,7 +7,7 @@ import { Order, OrderLineItemResponse } from '../interfaces/order';
   providedIn: 'root'
 })
 export class OrderService {
-  private apiUrl = 'http://localhost:8091/api/v1/orders'; // Update with your actual API URL
+  private apiUrl = 'http://localhost:8091/api/v1/orders';
 
   constructor(private http: HttpClient) {}
 
