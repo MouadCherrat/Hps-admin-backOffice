@@ -12,6 +12,8 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
   const roles = tokenService.keycloak?.tokenParsed?.["resource_access"]?.["hps-back-end"]?.roles;
   const expectedRoles = route.data['roles'] as string[];
 
+
+
   if (!roles || !expectedRoles.some(role => roles.includes(role))) {
     router.navigate(['/forbidden']);
     setTimeout(() => {
