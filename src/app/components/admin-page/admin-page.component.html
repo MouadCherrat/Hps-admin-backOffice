@@ -100,6 +100,7 @@
   <table class="w-full border-collapse table-fixed">
     <thead>
       <tr class="bg-black text-white">
+        <th class="border p-2 w-1/6">ID</th>
         <th class="border p-2 w-1/6">UserName</th>
         <th class="border p-2 w-1/6">Last Name</th>
         <th class="border p-2 w-1/6">Email</th>
@@ -110,6 +111,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let client of clients">
+        <td class="border p-2" [innerHTML]="client.id | nullFormatter"></td>
         <td class="border p-2" [innerHTML]="client.userName | nullFormatter"></td>
         <td class="border p-2" [innerHTML]="client.lastName | nullFormatter"></td>
         <td class="border p-2" [innerHTML]="client.email | nullFormatter"></td>

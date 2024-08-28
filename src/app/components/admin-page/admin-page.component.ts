@@ -87,11 +87,15 @@ export class AdminPageComponent implements OnInit {
   loadOrderLineItems(orderId: number): void {
     if (!this.orderLineItems[orderId]) {
       this.orderService.getOrderLineItems(orderId).subscribe(
-        (items: OrderLineItemResponse[]) => this.orderLineItems[orderId] = items,
+        (items: OrderLineItemResponse[]) => {
+          console.log('Received order line items:', items); // Add this console log
+          this.orderLineItems[orderId] = items;
+        },
         (error: any) => console.error('Error loading order line items:', error)
       );
     }
   }
+  
 
   isOrderItemsVisible(orderId: number): boolean {
     return this.visibleOrderItemsId === orderId;
